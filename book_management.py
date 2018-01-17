@@ -1,18 +1,20 @@
 from flask import Flask,request,jsonify
 import pymysql
-import json
 import collections
-from collections import Counter
-
+ 
+#Establishing connection the database 
 conn = pymysql.connect(host="localhost",user="root",password="root",db="book")
-c = conn.cursor()
+c = conn.cursor()  
 
-app = Flask(__name__)
+app = Flask(__name__)  # Initializing flask app
 
-@app.route('/',methods=['GET'])
+#Welcome message when we are initially in loacalhost:5000 (or 127.0.0.1:5000).
+@app.route('/',methods=['GET'])   
 def main():
- return ("Hello, Welcome to Book Management App")
+ return ("Hi,I am Akarsh, Welcome to my Book Management App")
 
+#The Create or Insert part of CRUD to insert new books into the data base
+#I use 'POST' because I want to send the data to the server
 @app.route('/insert',methods=['POST'])
 def insert_data():
     isbn = request.json['isbn']
@@ -23,6 +25,8 @@ def insert_data():
     conn.commit()
     return ("Data Inserted successful")
 
+#The Read part of CRUD to list the books available in the database
+#Here, I used 'GET' because I want to receive the list of books from the server
 @app.route('/retrieve',methods=['GET'])
 def select():
     query = "SELECT * from book_tb"
@@ -33,6 +37,8 @@ def select():
      st = st + str(row[0]) + "||" + str(row[1]) + "||" +str(row[2]) + "||" +str(row[3]) + "\n"
     return (st)
 
+#The Update part of CRUD to update an old record specified by old_isbn with a new record specified by new_isbn and it's corresponding new values
+#here, again I use 'POST' to send the data to the server
 @app.route('/update_details',methods=['POST'])
 def details_update():
     new_isbn = request.json['new_isbn']
@@ -45,6 +51,8 @@ def details_update():
     c.execute(query,param)
     return ("Update successful!")
 
+#The Delete part of CRUD to delete a record or entry in the database specified by isbn
+#Here, I used 'POST' to specify the isbn value that is to be deleted
 @app.route('/delete_data',methods=['POST'])
 def book_deletion():
     isbn= request.json['isbn']
@@ -52,7 +60,7 @@ def book_deletion():
     c.execute(query,isbn)
     return ("Record deleted successfully")
 
+#running the app
 app.run()
-
 
 
